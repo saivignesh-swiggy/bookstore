@@ -1,6 +1,32 @@
 package main
 
 import (
+	"bookstore/controllers"
+	"bookstore/db"
+	"bookstore/logger"
+	"bookstore/repositories"
+	"bookstore/routes"
+)
+
+func main() {
+	// Initialize database
+	logger.Init()
+	db.InitDatabase()
+
+	// Initialize repository and controller
+	bookRepo := repositories.NewBookRepository()
+	bookController := controllers.NewBookController(bookRepo)
+
+	// Setup routes
+	r := routes.SetupRouter(bookController)
+
+	// Run server
+	r.Run(":8080")
+}
+
+/*package main
+
+import (
 	"fmt"
 	"strconv"
 
@@ -11,12 +37,7 @@ import (
 
 // TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
 // the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-/*type Book struct {
-	id     int
-	title  string
-	author string
-	price  float64
-}*/
+
 type Book struct {
 	ID     int     `json:"id"`
 	Title  string  `json:"title"`
@@ -40,12 +61,7 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 			return
 		}
-		/*for _, existingBook := range books {
-			if existingBook.Title == book.Title && existingBook.Author == book.Author {
-				c.JSON(http.StatusConflict, gin.H{"error": "Book already present"})
-				return
-			}
-		}*/
+
 		key := fmt.Sprintf("%s:%s", book.Title, book.Author)
 		if _, exists := titleAuthorIndex[key]; exists {
 			c.JSON(http.StatusConflict, gin.H{"message": "Book already present"})
@@ -137,9 +153,10 @@ func main() {
 	r.Run(":8080")
 
 }
-
+*/
 /*
 curl -X GET "http://localhost:8080/books/1"
+curl http://localhost:8080/metrics
 
 curl -X GET "http://localhost:8080/books"
 
@@ -164,7 +181,7 @@ curl -X POST http://localhost:8080/books \
            "author": "Aditi Sharma",
            "price": 19.99
          }'
-curl -X PUT http://localhost:8080/books/3 \
+curl -X PUT http://localhost:8080/books/1 \
      -H "Content-Type: application/json" \
      -d '{
            "title": "The White Tiger",
@@ -173,5 +190,8 @@ curl -X PUT http://localhost:8080/books/3 \
          }'
 
 curl -X DELETE "http://localhost:8080/books/1"
+
+git config --global user.name "saivignesh-swiggy"
+git config --global user.email "kopparam.vignesh_int@external.swiggy.in"
 
 */
