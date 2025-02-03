@@ -17,7 +17,6 @@ import (
 	"testing"
 )
 
-// Setup in-memory database
 func setupTestDB() {
 	var err error
 	db.DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
@@ -27,7 +26,6 @@ func setupTestDB() {
 	db.DB.AutoMigrate(&models.Book{})
 }
 
-// Setup controller and router
 func setupTestController() (*controllers.BookController, *gin.Engine) {
 	repo := repositories.NewBookRepository()
 	controller := controllers.NewBookController(repo)

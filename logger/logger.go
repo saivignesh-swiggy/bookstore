@@ -5,11 +5,9 @@ import (
 	"os"
 )
 
-// Logger is the logger instance
 var Logger = logrus.New()
 
 func Init() {
-	// Set log format and output to stdout
 	Logger.SetFormatter(&logrus.JSONFormatter{})
 	Logger.SetOutput(os.Stdout)
 	Logger.SetLevel(logrus.InfoLevel)

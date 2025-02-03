@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	// Define a counter for HTTP requests
 	httpRequests = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "http_requests_total",
@@ -22,7 +21,6 @@ var (
 		[]string{"method", "status"},
 	)
 
-	// Define a histogram to track the duration of HTTP requests
 	httpDuration = prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name:    "http_duration_seconds",
@@ -34,7 +32,7 @@ var (
 )
 
 func init() {
-	// Register metrics with Prometheus
+
 	prometheus.MustRegister(httpRequests)
 	prometheus.MustRegister(httpDuration)
 }
@@ -52,14 +50,13 @@ func NewBookController(repo *repositories.BookRepository) *BookController {
 	return &BookController{Repo: repo, Log: logger}
 }
 
-// Expose metrics to Prometheus
 func (bc *BookController) Metrics(c *gin.Context) {
 	handler := promhttp.Handler()
 	handler.ServeHTTP(c.Writer, c.Request)
 }
 
 func (bc *BookController) AddBook(c *gin.Context) {
-	// Start timer to track request duration
+
 	start := time.Now()
 
 	var book models.Book

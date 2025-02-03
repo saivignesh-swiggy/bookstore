@@ -7,7 +7,6 @@ import (
 )
 
 var (
-	// Defining the metrics
 	TotalBooksAdded = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "total_books_added",
@@ -24,7 +23,6 @@ var (
 )
 
 func Init() {
-	// Registering the metrics with Prometheus
 	prometheus.MustRegister(TotalBooksAdded)
 	prometheus.MustRegister(BooksAvailable)
 }
