@@ -3,11 +3,13 @@ package tests
 import (
 	"bookstore/controllers"
 	"bookstore/db"
+	"bookstore/metrics"
 	"bookstore/models"
 	"bookstore/repositories"
 	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -17,7 +19,13 @@ import (
 	"testing"
 )
 
+func resetPrometheusRegistry() {
+	prometheus.DefaultRegisterer = prometheus.NewRegistry()
+	prometheus.DefaultGatherer = prometheus.NewRegistry()
+}
+
 func setupTestDB() {
+	resetPrometheusRegistry()
 	var err error
 	db.DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
@@ -27,8 +35,10 @@ func setupTestDB() {
 }
 
 func setupTestController() (*controllers.BookController, *gin.Engine) {
-	repo := repositories.NewBookRepository()
-	controller := controllers.NewBookController(repo)
+	metrics := metrics.NewAPIMetrics()
+	repo := repositories.NewSQLiteBookRepository(db.DB, metrics)
+
+	controller := controllers.NewBookController(repo, metrics)
 
 	// Create a test router
 	router := gin.Default()

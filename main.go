@@ -4,18 +4,26 @@ import (
 	"bookstore/controllers"
 	"bookstore/db"
 	"bookstore/logger"
+	"bookstore/metrics"
 	"bookstore/repositories"
 	"bookstore/routes"
+	"log"
 )
 
 func main() {
 	// Initialize database
 	logger.Init()
-	db.InitDatabase()
+	database, err := db.InitDatabase()
+	if err != nil {
+		log.Fatal("Failed to initialize database")
+	}
+
+	apiMetrics := metrics.NewAPIMetrics()
+	go metrics.ExposeMetrics()
 
 	// Initialize repository and controller
-	bookRepo := repositories.NewBookRepository()
-	bookController := controllers.NewBookController(bookRepo)
+	var bookRepo repositories.BookRepository = repositories.NewSQLiteBookRepository(database, apiMetrics)
+	bookController := controllers.NewBookController(bookRepo, apiMetrics)
 
 	// Setup routes
 	r := routes.SetupRouter(bookController)
